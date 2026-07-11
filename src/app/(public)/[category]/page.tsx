@@ -31,9 +31,16 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 export async function generateStaticParams() {
-  const categories = await getCategories();
-  return categories.map((category) => ({ category: category.slug }));
+  try {
+    const categories = await getCategories();
+    return categories.map((category) => ({ category: category.slug }));
+  } catch {
+    // Tables may not exist yet on first deploy — run db:migrate before build
+    return [];
+  }
 }
+
+export const dynamic = "force-dynamic";
 
 export default async function CategoryPage({ params, searchParams }: PageProps) {
   const { category: slug } = await params;

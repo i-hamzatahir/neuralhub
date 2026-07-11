@@ -115,7 +115,12 @@ git push -u origin main
 1. Go to [vercel.com/new](https://vercel.com/new).
 2. **Import** your GitHub `neuralhub` repository.
 3. Framework preset: **Next.js** (auto-detected).
-4. **Do not deploy yet** — open **Environment Variables** first.
+4. Under **Build & Development Settings**, confirm:
+   - **Root Directory:** leave empty
+   - **Build Command:** leave empty (uses `npm run build` from `package.json`)
+   - **Output Directory:** leave **completely empty** — do not type `(default)`, `.`, or `.next`
+   - **Install Command:** leave empty (uses `npm install`)
+5. **Do not deploy yet** — open **Environment Variables** first.
 
 ### Required environment variables
 
@@ -153,9 +158,9 @@ Add these for **Production** (and Preview if you want preview deploys to work):
 | `NEXT_PUBLIC_ADS_ENABLED=true` + AdSense IDs | Ads |
 | `SEARCH_PROVIDER=hybrid` | FTS + vector search (needs OpenAI for embeddings) |
 
-5. Click **Deploy**.
+6. Click **Deploy**.
 
-Vercel runs `npm run build` automatically (`prisma generate` via `postinstall`).
+Vercel runs `npm run build` automatically (`prisma generate` via `postinstall` and in the build script).
 
 ---
 
@@ -336,6 +341,7 @@ For richer stack traces, add [Sentry](https://sentry.io) later — not required 
 
 | Issue | Fix |
 |-------|-----|
+| `Next.js output directory "(default)" was not found` | Build did not produce `.next`. Scroll **up** in build logs for the real error. Clear **Output Directory** in Vercel settings (leave blank). Set Framework to **Next.js**. Run `npm run deploy:migrate` on Neon so build-time DB queries succeed. Redeploy after pushing latest code. |
 | Build fails on Vercel | Check env vars; ensure `CRON_SECRET`, Supabase, `AUTH_SECRET` set |
 | `database: disconnected` on /api/health | Wrong `DIRECT_DATABASE_URL`; use non-pooler Neon host |
 | Prisma migration errors | Run `npm run deploy:migrate` with direct URL |

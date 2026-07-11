@@ -10,11 +10,19 @@ import { resolveAbsoluteUrl } from "@/lib/seo/metadata";
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [articles, categories, authors] = await Promise.all([
-    listPublishedArticleSlugs(),
-    getCategories(),
-    listAuthorsForSitemap(),
-  ]);
+  let articles: Awaited<ReturnType<typeof listPublishedArticleSlugs>> = [];
+  let categories: Awaited<ReturnType<typeof getCategories>> = [];
+  let authors: Awaited<ReturnType<typeof listAuthorsForSitemap>> = [];
+
+  try {
+    [articles, categories, authors] = await Promise.all([
+      listPublishedArticleSlugs(),
+      getCategories(),
+      listAuthorsForSitemap(),
+    ]);
+  } catch {
+    // Schema not migrated yet — return static URLs only
+  }
 
   const staticPages: MetadataRoute.Sitemap = [
     {

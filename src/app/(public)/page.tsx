@@ -10,6 +10,8 @@ import { buildCollectionPageJsonLd } from "@/lib/seo/json-ld";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { siteConfig } from "@/config/site";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = buildPageMetadata({
   title: siteConfig.name,
   description: siteConfig.description,

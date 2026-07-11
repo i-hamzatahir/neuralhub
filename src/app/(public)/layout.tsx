@@ -6,6 +6,8 @@ import { canAccessAdmin } from "@/lib/auth/policies";
 import { getSiteSettingsMap } from "@/lib/services/admin/admin.service";
 import { isSiteSettingEnabled } from "@/lib/security/site-settings";
 
+export const dynamic = "force-dynamic";
+
 export default async function PublicLayout({
   children,
 }: {
