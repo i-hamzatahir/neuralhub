@@ -1,9 +1,8 @@
 import { siteConfig } from "./site";
 
 export const mainNav = [
-  { title: "Home", href: "/" },
   { title: "Articles", href: "/articles" },
-  { title: "About", href: "/about" },
+  { title: "Authors", href: "/authors" },
 ] as const;
 
 export const topicNav = [
@@ -16,12 +15,15 @@ export const topicNav = [
   { title: "Developer Tools", href: "/developer-tools", description: "Tools & frameworks" },
 ] as const;
 
-export const resourceNav = [
-  { title: "Projects", href: "/projects" },
-  { title: "Tools", href: "/tools" },
-  { title: "Resources", href: "/resources" },
-  { title: "Community", href: "/community" },
+export const exploreNav = [
+  { title: "Projects", href: "/projects", description: "Open-source and experiments" },
+  { title: "Tools", href: "/tools", description: "Curated developer utilities" },
+  { title: "Resources", href: "/resources", description: "Guides, papers, and links" },
+  { title: "Community", href: "/community", description: "Writers and discussions" },
 ] as const;
+
+/** @deprecated Use exploreNav */
+export const resourceNav = exploreNav;
 
 export const footerNav = {
   platform: [
@@ -51,5 +53,5 @@ export const footerNav = {
 
 export const brand = {
   name: siteConfig.name,
-  tagline: "Knowledge for the future of technology",
+  tagline: "Professional articles on AI, data science, and software engineering",
 } as const;

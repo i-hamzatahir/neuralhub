@@ -1,6 +1,6 @@
 import {
   getCategories,
-  listFeaturedAuthors,
+  listCategorySectionPreviews,
   listPublishedArticles,
   listTrendingArticles,
 } from "@/lib/services/articles/article.service";
@@ -13,19 +13,21 @@ import { siteConfig } from "@/config/site";
 export const dynamic = "force-dynamic";
 
 export const metadata = buildPageMetadata({
-  title: siteConfig.name,
-  description: siteConfig.description,
+  title: `${siteConfig.name} | AI, Data Science & Technology Blog`,
+  description: `${siteConfig.description} Browse latest and most-viewed articles on AI, machine learning, data science, programming, cloud computing, and developer tools.`,
   path: "/",
+  keywords: [...siteConfig.keywords],
 });
 
 export default async function HomePage() {
-  const [featured, latest, trending, categories, authors] = await Promise.all([
-    listPublishedArticles({ featured: true, limit: 1 }),
-    listPublishedArticles({ limit: 6 }),
-    listTrendingArticles(4),
-    getCategories(),
-    listFeaturedAuthors(6),
-  ]);
+  const [featured, latest, popular, categories, categorySections] =
+    await Promise.all([
+      listPublishedArticles({ featured: true, limit: 1 }),
+      listPublishedArticles({ limit: 8 }),
+      listTrendingArticles(5),
+      getCategories(),
+      listCategorySectionPreviews(4),
+    ]);
 
   return (
     <>
@@ -39,9 +41,9 @@ export default async function HomePage() {
       <HomeContent
         featuredArticle={featured.articles[0] ?? null}
         latestArticles={latest.articles}
-        trendingArticles={trending.articles}
+        popularArticles={popular.articles}
+        categorySections={categorySections}
         categories={categories}
-        featuredAuthors={authors}
       />
     </>
   );

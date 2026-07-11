@@ -16,34 +16,34 @@ export function ArticleCard({ article, featured }: ArticleCardProps) {
     <Link
       href={`/articles/${article.slug}`}
       className={cn(
-        "group flex flex-col rounded-xl border border-border bg-card transition-all duration-200",
-        "hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5",
+        "group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-200",
+        "hover:border-primary/20 hover:shadow-md",
         featured && "lg:flex-row lg:items-stretch",
       )}
     >
       {article.coverImage && (
         <div
           className={cn(
-            "relative overflow-hidden rounded-t-xl bg-muted",
-            featured ? "lg:w-2/5 lg:rounded-l-xl lg:rounded-tr-none" : "aspect-[16/9]",
+            "relative overflow-hidden bg-muted",
+            featured ? "lg:w-[42%]" : "aspect-[16/10]",
           )}
         >
           <Image
             src={article.coverImage}
             alt=""
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             sizes={featured ? "40vw" : "33vw"}
           />
         </div>
       )}
-      <div className={cn("flex flex-1 flex-col p-5", featured && "lg:p-6")}>
-        <div className="mb-2 flex items-center gap-2">
+      <div className={cn("flex flex-1 flex-col p-5", featured && "lg:p-7")}>
+        <div className="mb-3 flex items-center gap-2">
           <span
-            className="rounded-md px-2 py-0.5 text-xs font-medium"
+            className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide"
             style={{
-              backgroundColor: `${article.category.color ?? "#5e6ad2"}20`,
-              color: article.category.color ?? "#5e6ad2",
+              backgroundColor: `${article.category.color ?? "#0d6e6e"}18`,
+              color: article.category.color ?? "#0d6e6e",
             }}
           >
             {article.category.name}
@@ -51,18 +51,18 @@ export function ArticleCard({ article, featured }: ArticleCardProps) {
         </div>
         <h3
           className={cn(
-            "text-display font-semibold tracking-tight group-hover:text-primary transition-colors",
-            featured ? "text-xl lg:text-2xl" : "text-lg",
+            "font-display font-semibold tracking-tight transition-colors group-hover:text-primary",
+            featured ? "text-2xl lg:text-[1.75rem]" : "text-xl",
           )}
         >
           {article.title}
         </h3>
         {article.excerpt && (
-          <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+          <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
             {article.excerpt}
           </p>
         )}
-        <div className="mt-auto flex items-center gap-4 pt-4 text-xs text-muted-foreground">
+        <div className="mt-auto flex flex-wrap items-center gap-4 pt-5 text-xs text-muted-foreground">
           <div className="flex items-center gap-1.5">
             {authorImage ? (
               <Image
@@ -73,7 +73,7 @@ export function ArticleCard({ article, featured }: ArticleCardProps) {
                 className="rounded-full"
               />
             ) : (
-              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-[10px] text-background">
                 {(article.author.name ?? article.author.username).charAt(0)}
               </div>
             )}

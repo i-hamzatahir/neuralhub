@@ -20,10 +20,10 @@ export function RegisterForm() {
   });
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md border-border/80 shadow-sm">
       <CardHeader className="text-center">
-        <CardTitle className="text-display text-2xl">Create account</CardTitle>
-        <CardDescription>Join the NeuralHub community</CardDescription>
+        <CardTitle className="text-2xl font-bold">Create account</CardTitle>
+        <CardDescription>Start reading, writing, and publishing on NeuralHub.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <OAuthButtons callbackUrl="/" />

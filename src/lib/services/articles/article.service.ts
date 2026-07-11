@@ -102,6 +102,43 @@ export async function listTrendingArticles(limit = 4) {
   return listPublishedArticles({ limit, sort: "viewCount" });
 }
 
+export type CategorySectionPreview = {
+  category: Category;
+  latest: ArticleWithRelations[];
+  popular: ArticleWithRelations[];
+};
+
+export async function listCategorySectionPreviews(limitPerList = 4) {
+  const categories = await getCategories();
+
+  const sections = await Promise.all(
+    categories.map(async (category) => {
+      const [latest, popular] = await Promise.all([
+        listPublishedArticles({
+          categorySlug: category.slug,
+          limit: limitPerList,
+          sort: "publishedAt",
+        }),
+        listPublishedArticles({
+          categorySlug: category.slug,
+          limit: limitPerList,
+          sort: "viewCount",
+        }),
+      ]);
+
+      return {
+        category,
+        latest: latest.articles,
+        popular: popular.articles,
+      };
+    }),
+  );
+
+  return sections.filter(
+    (section) => section.latest.length > 0 || section.popular.length > 0,
+  );
+}
+
 export async function listAuthorArticles(
   authorId: string,
   status?: ArticleStatus,

@@ -3,7 +3,7 @@ import { getAppUrl } from "@/lib/url";
 export const siteConfig = {
   name: "NeuralHub",
   description:
-    "A premium knowledge platform for AI, Data Science, Machine Learning, Programming, and Research.",
+    "Expert articles, tutorials, and guides on artificial intelligence, machine learning, data science, programming, and technology research.",
   url: getAppUrl(),
   locale: "en_US",
   ogImage: "/opengraph-image",

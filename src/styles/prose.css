@@ -1,9 +1,10 @@
 /* Article typography for reader and editor */
 
 .prose {
-  max-width: none;
-  line-height: 1.75;
+  max-width: 65ch;
+  line-height: 1.8;
   color: var(--foreground);
+  font-size: 1.0625rem;
 }
 
 .prose h1,

@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Brain, ExternalLink } from "lucide-react";
-import { brand, footerNav } from "@/config/nav";
+import { ExternalLink, Rss } from "lucide-react";
+import { brand, footerNav, topicNav } from "@/config/nav";
 import { siteConfig } from "@/config/site";
 import { NewsletterSubscribeForm } from "@/components/newsletter/newsletter-subscribe-form";
 import { AdSlot } from "@/components/ads/ad-slot";
+import { BrandLogo } from "@/components/layout/brand-logo";
 
 function FooterColumn({
   title,
@@ -14,13 +15,13 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <h3 className="text-label mb-4">{title}</h3>
-      <ul className="flex flex-col gap-2.5">
+      <h3 className="mb-3 text-sm font-semibold text-foreground">{title}</h3>
+      <ul className="space-y-2">
         {links.map((link) => (
           <li key={link.href}>
             <Link
               href={link.href}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="text-sm text-muted-foreground transition-colors hover:text-primary"
             >
               {link.title}
             </Link>
@@ -35,62 +36,62 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border bg-muted/30">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <footer className="mt-auto border-t border-border bg-muted/40">
+      <div className="blog-container">
         <AdSlot slot="footer" className="py-4" />
 
-        {/* Newsletter band */}
-        <div className="flex flex-col items-start justify-between gap-6 border-b border-border py-12 sm:flex-row sm:items-center">
-          <div className="max-w-md">
-            <h2 className="text-display text-xl font-semibold">
-              Stay ahead of the curve
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Get the latest in AI, data science, and technology delivered to
-              your inbox. Free, no spam.
+        <div className="grid gap-10 py-12 lg:grid-cols-[1.2fr_1fr]">
+          <div>
+            <BrandLogo className="mb-4" />
+            <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
+              {siteConfig.description}
             </p>
+            <div className="mt-4 flex items-center gap-4 text-sm">
+              <Link
+                href="/feed.xml"
+                className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary"
+              >
+                <Rss className="h-4 w-4" />
+                RSS Feed
+              </Link>
+              <Link
+                href={siteConfig.links.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-muted-foreground hover:text-primary"
+              >
+                GitHub
+                <ExternalLink className="h-3 w-3" />
+              </Link>
+            </div>
           </div>
-          <NewsletterSubscribeForm source="footer" compact />
+
+          <div className="rounded-lg border border-border bg-card p-5">
+            <h2 className="text-base font-semibold">Newsletter</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Weekly articles on AI, data science, and engineering.
+            </p>
+            <div className="mt-4">
+              <NewsletterSubscribeForm source="footer" compact />
+            </div>
+          </div>
         </div>
 
-        {/* Link columns */}
-        <div className="grid grid-cols-2 gap-8 py-12 sm:grid-cols-4">
-          <FooterColumn title="Platform" links={footerNav.platform} />
-          <FooterColumn title="Topics" links={footerNav.topics} />
+        <div className="grid grid-cols-2 gap-8 border-t border-border py-10 sm:grid-cols-4">
+          <FooterColumn title="Browse" links={footerNav.platform} />
+          <FooterColumn
+            title="Categories"
+            links={topicNav.map((item) => ({
+              title: item.title,
+              href: item.href,
+            }))}
+          />
           <FooterColumn title="Company" links={footerNav.company} />
           <FooterColumn title="Legal" links={footerNav.legal} />
         </div>
 
-        {/* Bottom bar */}
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-border py-6 sm:flex-row">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Brain className="h-3.5 w-3.5" />
-            </div>
-            <span className="text-sm text-muted-foreground">
-              © {year} {brand.name}. {brand.tagline}.
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href={siteConfig.links.twitter}
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Twitter
-              <ExternalLink className="h-3 w-3" />
-            </Link>
-            <Link
-              href={siteConfig.links.github}
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GitHub
-              <ExternalLink className="h-3 w-3" />
-            </Link>
-          </div>
+        <div className="border-t border-border py-6 text-center text-sm text-muted-foreground sm:text-left">
+          © {year} {brand.name}. {brand.tagline}.
         </div>
       </div>
     </footer>

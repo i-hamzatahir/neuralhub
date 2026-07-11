@@ -2,28 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import * as React from "react";
-import {
-  Brain,
-  ChevronDown,
-  Menu,
-  Search,
-  X,
-} from "lucide-react";
-import { brand, mainNav, resourceNav, topicNav } from "@/config/nav";
+import { ChevronDown, Menu, Search, X } from "lucide-react";
+import { mainNav, topicNav } from "@/config/nav";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { HeaderAuth } from "@/components/layout/header-auth";
+import { BrandLogo } from "@/components/layout/brand-logo";
+import { UserMenu } from "@/components/auth/user-menu";
+import { NotificationBell } from "@/components/engagement/notification-bell";
 import { cn } from "@/lib/utils/cn";
 
 function NavLink({
   href,
   children,
-  className,
 }: {
   href: string;
   children: React.ReactNode;
-  className?: string;
 }) {
   const pathname = usePathname();
   const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -32,9 +28,8 @@ function NavLink({
     <Link
       href={href}
       className={cn(
-        "text-sm font-medium transition-colors hover:text-foreground",
+        "text-sm font-medium transition-colors hover:text-primary",
         isActive ? "text-foreground" : "text-muted-foreground",
-        className,
       )}
     >
       {children}
@@ -61,31 +56,25 @@ function TopicsDropdown() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className={cn(
-          "inline-flex items-center gap-1 text-sm font-medium transition-colors hover:text-foreground",
-          open ? "text-foreground" : "text-muted-foreground",
-        )}
+        className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         aria-expanded={open}
         aria-haspopup="true"
       >
-        Topics
+        Categories
         <ChevronDown
           className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-180")}
         />
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-2 w-56 animate-slide-down rounded-xl border border-border bg-popover p-2 shadow-lg">
+        <div className="absolute left-0 top-full z-50 mt-2 w-56 rounded-lg border border-border bg-popover p-2 shadow-md">
           {topicNav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="flex flex-col rounded-lg px-3 py-2 transition-colors hover:bg-accent"
+              className="block rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent"
             >
-              <span className="text-sm font-medium">{item.title}</span>
-              <span className="text-xs text-muted-foreground">
-                {item.description}
-              </span>
+              <span className="font-medium">{item.title}</span>
             </Link>
           ))}
         </div>
@@ -96,50 +85,36 @@ function TopicsDropdown() {
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const { data: session, status } = useSession();
+  const isLoggedIn = !!session?.user;
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 glass">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Brain className="h-4 w-4" />
-          </div>
-          <span className="text-display text-base font-semibold tracking-tight">
-            {brand.name}
-          </span>
-        </Link>
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background">
+      <div className="blog-container flex h-16 items-center justify-between gap-4">
+        <BrandLogo />
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-6 lg:flex" aria-label="Main">
+        <nav className="hidden items-center gap-6 md:flex" aria-label="Main">
           {mainNav.map((item) => (
             <NavLink key={item.href} href={item.href}>
               {item.title}
             </NavLink>
           ))}
           <TopicsDropdown />
-          {resourceNav.map((item) => (
-            <NavLink key={item.href} href={item.href}>
-              {item.title}
-            </NavLink>
-          ))}
+          <NavLink href="/about">About</NavLink>
         </nav>
 
-        {/* Actions */}
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon-sm" asChild className="hidden sm:inline-flex">
-            <Link href="/search" aria-label="Search">
+          <Button variant="ghost" size="icon-sm" asChild>
+            <Link href="/search" aria-label="Search articles">
               <Search className="h-4 w-4" />
             </Link>
           </Button>
           <ThemeToggle />
           <HeaderAuth />
-
-          {/* Mobile menu toggle */}
           <Button
             variant="ghost"
             size="icon-sm"
-            className="lg:hidden"
+            className="md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
@@ -149,34 +124,54 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile nav */}
       {mobileOpen && (
-        <div className="border-t border-border/60 lg:hidden animate-slide-down">
-          <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6" aria-label="Mobile">
-            {[...mainNav, ...topicNav, ...resourceNav].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              >
-                {item.title}
-              </Link>
-            ))}
-            <div className="mt-3 flex flex-col gap-2 border-t border-border pt-4">
-              <Button variant="outline" asChild>
-                <Link href="/login" onClick={() => setMobileOpen(false)}>
-                  Log in
+        <nav
+          className="border-t border-border md:hidden"
+          aria-label="Mobile"
+        >
+          <div className="blog-container flex flex-col gap-1 py-4">
+            {[...mainNav, ...topicNav, { title: "About", href: "/about" }].map(
+              (item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground"
+                >
+                  {item.title}
                 </Link>
-              </Button>
-              <Button asChild>
-                <Link href="/register" onClick={() => setMobileOpen(false)}>
-                  Sign up
-                </Link>
-              </Button>
+              ),
+            )}
+            <Link
+              href="/search"
+              onClick={() => setMobileOpen(false)}
+              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground"
+            >
+              Search
+            </Link>
+            <div className="mt-3 border-t border-border pt-3">
+              {status === "loading" ? null : isLoggedIn ? (
+                <div className="flex items-center gap-2 px-3">
+                  <NotificationBell />
+                  <UserMenu user={session.user} />
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2 px-1">
+                  <Button variant="outline" asChild>
+                    <Link href="/login" onClick={() => setMobileOpen(false)}>
+                      Log in
+                    </Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/register" onClick={() => setMobileOpen(false)}>
+                      Sign up
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
-          </nav>
-        </div>
+          </div>
+        </nav>
       )}
     </header>
   );

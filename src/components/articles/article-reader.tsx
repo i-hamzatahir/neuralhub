@@ -2,11 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArticleContent } from "@/components/articles/article-content";
 import { ArticleToc } from "@/components/articles/article-toc";
+import { ArticleListItem } from "@/components/articles/article-list-item";
 import { ShareButtons } from "@/components/articles/share-buttons";
 import { ArticleEngagementBar } from "@/components/engagement/article-engagement-bar";
 import { ArticleComments } from "@/components/engagement/article-comments";
 import { AdSlot } from "@/components/ads/ad-slot";
 import { AffiliateDisclosure } from "@/components/articles/affiliate-disclosure";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import type { ArticleWithRelations } from "@/lib/services/articles/article.service";
 import type { CommentWithAuthor } from "@/lib/services/engagement/engagement.service";
 import type { TocHeading } from "@/lib/utils/tiptap-headings";
@@ -45,127 +47,167 @@ export function ArticleReader({
   isLoggedIn,
 }: ArticleReaderProps) {
   const authorImage = article.author.image ?? article.author.avatar;
+  const authorName = article.author.name ?? article.author.username;
+  const published = article.publishedAt;
+  const updated =
+    article.updatedAt &&
+    published &&
+    article.updatedAt.getTime() > published.getTime()
+      ? article.updatedAt
+      : null;
 
   return (
-    <article>
-      <header className="mx-auto max-w-3xl px-4 pt-12 text-center sm:px-6">
-        <Link
-          href={`/${article.category.slug}`}
-          className="text-label text-primary"
-        >
-          {article.category.name}
-        </Link>
-        <h1 className="text-display mt-4 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
-          {article.title}
-        </h1>
-        {article.excerpt && (
-          <p className="text-body mt-4 text-lg">{article.excerpt}</p>
-        )}
-        <div className="mt-6 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <Link
-              href={`/authors/${article.author.username}`}
-              className="flex items-center gap-2 hover:text-foreground transition-colors"
+    <article itemScope itemType="https://schema.org/Article">
+      <div className="blog-container py-8 sm:py-10">
+        <Breadcrumbs
+          items={[
+            { name: "Home", href: "/" },
+            { name: "Articles", href: "/articles" },
+            { name: article.category.name, href: `/${article.category.slug}` },
+            { name: article.title },
+          ]}
+          className="mb-6"
+        />
+
+        <header className="max-w-3xl">
+          <Link
+            href={`/${article.category.slug}`}
+            className="text-sm font-semibold text-primary hover:underline"
+          >
+            {article.category.name}
+          </Link>
+          <h1
+            className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl lg:text-[2.75rem]"
+            itemProp="headline"
+          >
+            {article.title}
+          </h1>
+          {article.excerpt && (
+            <p className="mt-4 text-lg leading-relaxed text-muted-foreground" itemProp="description">
+              {article.excerpt}
+            </p>
+          )}
+
+          <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+            <div
+              className="flex items-center gap-2"
+              itemProp="author"
+              itemScope
+              itemType="https://schema.org/Person"
             >
-              {authorImage ? (
-                <Image
-                  src={authorImage}
-                  alt=""
-                  width={32}
-                  height={32}
-                  unoptimized
-                  className="h-8 w-8 rounded-full object-cover"
-                />
-              ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">
-                  {(article.author.name ?? article.author.username).charAt(0)}
-                </div>
-              )}
-              <span className="font-medium">
-                {article.author.name ?? article.author.username}
-              </span>
-            </Link>
-            <span>·</span>
-            <time dateTime={article.publishedAt?.toISOString()}>
-              {article.publishedAt ? formatDate(article.publishedAt) : ""}
-            </time>
-            <span>·</span>
+              <meta itemProp="name" content={authorName} />
+              <Link
+                href={`/authors/${article.author.username}`}
+                className="flex items-center gap-2 font-medium text-foreground hover:text-primary"
+              >
+                {authorImage ? (
+                  <Image
+                    src={authorImage}
+                    alt={authorName}
+                    width={32}
+                    height={32}
+                    unoptimized
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">
+                    {authorName.charAt(0)}
+                  </div>
+                )}
+                <span>{authorName}</span>
+              </Link>
+            </div>
+            {published && (
+              <time dateTime={published.toISOString()} itemProp="datePublished">
+                Published {formatDate(published)}
+              </time>
+            )}
+            {updated && (
+              <time dateTime={updated.toISOString()} itemProp="dateModified">
+                Updated {formatDate(updated)}
+              </time>
+            )}
             <span>{article.readingTime} min read</span>
           </div>
-          <ShareButtons title={article.title} url={shareUrl} />
-        </div>
-        <div className="mt-4 flex justify-center">
-          <ArticleEngagementBar
-            articleId={article.id}
-            slug={article.slug}
-            initialLikes={engagement.likeCount}
-            initialLiked={engagement.liked}
-            initialBookmarked={engagement.bookmarked}
-            isLoggedIn={isLoggedIn}
-          />
-        </div>
-      </header>
 
-      {article.coverImage && (
-        <div className="relative mx-auto mt-10 max-w-4xl px-4 sm:px-6 aspect-[16/9] max-h-[480px]">
-          <Image
-            src={article.coverImage}
-            alt=""
-            fill
-            className="rounded-xl border border-border object-cover"
-            sizes="(max-width: 896px) 100vw, 896px"
-            priority
-          />
-        </div>
-      )}
+          <div className="mt-5 flex flex-wrap items-center gap-4">
+            <ShareButtons title={article.title} url={shareUrl} />
+            <ArticleEngagementBar
+              articleId={article.id}
+              slug={article.slug}
+              initialLikes={engagement.likeCount}
+              initialLiked={engagement.liked}
+              initialBookmarked={engagement.bookmarked}
+              isLoggedIn={isLoggedIn}
+            />
+          </div>
+        </header>
 
-      {article.aiSummary && (
-        <div className="mx-auto mt-8 max-w-3xl px-4 sm:px-6">
-          <div className="rounded-xl border border-primary/20 bg-primary/5 px-5 py-4">
-            <p className="text-label text-primary">Summary</p>
-            <p className="mt-2 text-sm leading-relaxed text-foreground/90">
+        {article.coverImage && (
+          <div className="relative mx-auto mt-8 aspect-[16/9] max-h-[480px] max-w-4xl overflow-hidden rounded-lg bg-muted">
+            <Image
+              src={article.coverImage}
+              alt={article.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 896px) 100vw, 896px"
+              priority
+              itemProp="image"
+            />
+          </div>
+        )}
+
+        {article.aiSummary && (
+          <aside className="mx-auto mt-8 max-w-3xl rounded-lg border border-border bg-muted/40 p-5">
+            <h2 className="text-sm font-semibold text-foreground">Summary</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               {article.aiSummary}
             </p>
+          </aside>
+        )}
+
+        {(article.isSponsored || article.isAffiliate) && (
+          <div className="mx-auto mt-6 max-w-3xl">
+            <AffiliateDisclosure
+              isSponsored={article.isSponsored}
+              isAffiliate={article.isAffiliate}
+            />
           </div>
-        </div>
-      )}
+        )}
 
-      {(article.isSponsored || article.isAffiliate) && (
-        <div className="mx-auto mt-6 max-w-3xl px-4 sm:px-6">
-          <AffiliateDisclosure
-            isSponsored={article.isSponsored}
-            isAffiliate={article.isAffiliate}
-          />
-        </div>
-      )}
-
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-        <div className="flex gap-12">
+        <div className="mt-10 flex gap-10">
           {headings.length > 0 && (
             <aside className="hidden w-56 shrink-0 xl:block">
-              <ArticleToc headings={headings} />
+              <nav aria-label="Table of contents">
+                <ArticleToc headings={headings} />
+              </nav>
               <AdSlot slot="sidebar" className="mt-8" />
             </aside>
           )}
-          <div className="mx-auto min-w-0 max-w-3xl flex-1">
+          <div className="min-w-0 max-w-3xl flex-1" itemProp="articleBody">
             <ArticleContent content={article.content} />
             <AdSlot slot="inArticle" className="my-8" />
           </div>
         </div>
-      </div>
 
-      {article.tags.length > 0 && (
-        <div className="mx-auto flex max-w-3xl flex-wrap gap-2 px-4 pb-8 sm:px-6">
-          {article.tags.map(({ tag }) => (
-            <span
-              key={tag.id}
-              className="rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground"
-            >
-              {tag.name}
-            </span>
-          ))}
-        </div>
-      )}
+        {article.tags.length > 0 && (
+          <footer className="mx-auto mt-8 max-w-3xl">
+            <h2 className="text-sm font-semibold text-foreground">Tags</h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {article.tags.map(({ tag }) => (
+                <Link
+                  key={tag.id}
+                  href={`/search?q=${encodeURIComponent(tag.name)}`}
+                  className="rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
+                  rel="tag"
+                >
+                  {tag.name}
+                </Link>
+              ))}
+            </div>
+          </footer>
+        )}
+      </div>
 
       <ArticleComments
         articleId={article.id}
@@ -177,21 +219,20 @@ export function ArticleReader({
       />
 
       {related.length > 0 && (
-        <section className="border-t border-border bg-muted/20 py-12">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-display mb-6 text-xl font-semibold">
+        <section
+          className="border-t border-border bg-muted/30 py-12"
+          aria-labelledby="related-articles"
+        >
+          <div className="blog-container">
+            <h2 id="related-articles" className="text-xl font-bold tracking-tight">
               Related articles
             </h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((a) => (
-                <Link
-                  key={a.id}
-                  href={`/articles/${a.slug}`}
-                  className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/30"
-                >
-                  <p className="text-label text-primary">{a.category.name}</p>
-                  <h3 className="text-display mt-2 font-semibold">{a.title}</h3>
-                </Link>
+            <p className="mt-1 text-sm text-muted-foreground">
+              More from {article.category.name}
+            </p>
+            <div className="mt-6">
+              {related.map((item) => (
+                <ArticleListItem key={item.id} article={item} />
               ))}
             </div>
           </div>

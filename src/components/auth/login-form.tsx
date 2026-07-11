@@ -33,10 +33,10 @@ export function LoginForm() {
       : null);
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md border-border/80 shadow-sm">
       <CardHeader className="text-center">
-        <CardTitle className="text-display text-2xl">Welcome back</CardTitle>
-        <CardDescription>Sign in to your NeuralHub account</CardDescription>
+        <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+        <CardDescription>Sign in to continue reading and writing.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <OAuthButtons callbackUrl={callbackUrl} />

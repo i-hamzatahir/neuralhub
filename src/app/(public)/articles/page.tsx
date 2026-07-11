@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { listPublishedArticles } from "@/lib/services/articles/article.service";
-import { ArticleCard } from "@/components/articles/article-card";
+import { ArticleListItem } from "@/components/articles/article-list-item";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { buildCollectionPageJsonLd } from "@/lib/seo/json-ld";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
@@ -7,8 +9,15 @@ import { JsonLdScript } from "@/components/seo/json-ld-script";
 export const metadata = buildPageMetadata({
   title: "Articles",
   description:
-    "Explore articles on AI, data science, machine learning, programming, and technology.",
+    "Browse expert articles on AI, machine learning, data science, programming, and technology from NeuralHub.",
   path: "/articles",
+  keywords: [
+    "AI articles",
+    "machine learning tutorials",
+    "data science guides",
+    "programming blog",
+    "technology articles",
+  ],
 });
 
 interface PageProps {
@@ -21,50 +30,83 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
   const { articles, total, pages } = await listPublishedArticles({ page });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="blog-container py-10 sm:py-12">
       <JsonLdScript
         data={buildCollectionPageJsonLd({
           name: "Articles",
           description:
-            "Explore articles on AI, data science, machine learning, programming, and technology.",
+            "Browse expert articles on AI, machine learning, data science, programming, and technology.",
           path: "/articles",
         })}
       />
-      <header className="mb-10">
-        <h1 className="text-display text-3xl font-semibold sm:text-4xl">Articles</h1>
-        <p className="text-body mt-2">
-          {total} article{total !== 1 ? "s" : ""} published
+
+      <Breadcrumbs
+        items={[
+          { name: "Home", href: "/" },
+          { name: "Articles" },
+        ]}
+        className="mb-6"
+      />
+
+      <header className="max-w-3xl">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Articles</h1>
+        <p className="mt-3 text-base leading-relaxed text-muted-foreground">
+          {total} published article{total !== 1 ? "s" : ""} covering artificial
+          intelligence, data science, machine learning, programming, and
+          technology research.
         </p>
       </header>
 
       {articles.length === 0 ? (
-        <p className="text-center text-muted-foreground py-16">
+        <p className="py-16 text-center text-muted-foreground">
           No articles published yet. Check back soon.
         </p>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8">
           {articles.map((article) => (
-            <ArticleCard key={article.id} article={article} />
+            <ArticleListItem key={article.id} article={article} />
           ))}
         </div>
       )}
 
       {pages > 1 && (
-        <div className="mt-10 flex justify-center gap-2">
+        <nav
+          className="mt-10 flex items-center justify-center gap-2"
+          aria-label="Article pagination"
+        >
+          {page > 1 && (
+            <Link
+              href={`/articles?page=${page - 1}`}
+              rel="prev"
+              className="rounded-md border border-border px-3 py-2 text-sm font-medium hover:bg-accent"
+            >
+              Previous
+            </Link>
+          )}
           {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
-            <a
+            <Link
               key={p}
               href={`/articles?page=${p}`}
-              className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium ${
+              aria-current={p === page ? "page" : undefined}
+              className={`flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-sm font-medium ${
                 p === page
                   ? "bg-primary text-primary-foreground"
                   : "border border-border hover:bg-accent"
               }`}
             >
               {p}
-            </a>
+            </Link>
           ))}
-        </div>
+          {page < pages && (
+            <Link
+              href={`/articles?page=${page + 1}`}
+              rel="next"
+              className="rounded-md border border-border px-3 py-2 text-sm font-medium hover:bg-accent"
+            >
+              Next
+            </Link>
+          )}
+        </nav>
       )}
     </div>
   );
