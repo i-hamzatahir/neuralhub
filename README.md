@@ -1,36 +1,167 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NeuralHub
 
-## Getting Started
+A premium knowledge platform for AI, Data Science, Machine Learning, Programming, and Research — inspired by Medium and Hashnode.
 
-First, run the development server:
+Built with Next.js 16, TypeScript, Tailwind CSS v4, Prisma 7, and PostgreSQL (Neon free tier). **$0/month** infrastructure target.
+
+## Status
+
+**Phases 1–16 complete.** The platform includes auth, publishing, SEO, search, engagement, admin, newsletter, ads, advanced editor, AI hooks, design polish, vector search, affiliate/membership prep, and production hardening.
+
+## Features
+
+| Area | Capabilities |
+|------|----------------|
+| **Auth** | Email/password, Google/GitHub OAuth, email verification, password reset |
+| **Publishing** | TipTap editor, autosave, drafts, review workflow, scheduled publish, preview mode |
+| **Editor** | Code highlighting, math (KaTeX), Mermaid, Markdown, tables, callouts, video embeds |
+| **Public** | Article reader, TOC, categories, authors, community/projects/tools/resources pages |
+| **Search** | Postgres FTS, vector semantic search, hybrid mode (`SEARCH_PROVIDER`) |
+| **Engagement** | Comments, likes, bookmarks, follow authors, notifications |
+| **Admin** | Articles, users, tags, media, analytics, category CRUD, audit logs, settings |
+| **Growth** | Newsletter (double opt-in), AdSense slots, cookie consent, Microsoft Clarity |
+| **AI** | Title/excerpt suggestions, auto-summary, auto-tagging, embeddings on publish |
+| **Monetization** | Affiliate/sponsored disclosure, membership tier schema (Stripe-ready) |
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript (strict) |
+| Styling | Tailwind CSS v4 |
+| Database | PostgreSQL via Neon |
+| ORM | Prisma 7 |
+| Auth | Auth.js v5 |
+| Editor | TipTap 3 |
+| Icons | Lucide React |
+| Validation | Zod |
+| Hosting | Vercel (free tier) |
+
+## Prerequisites
+
+- Node.js 20+
+- npm 10+
+- A free [Neon](https://neon.tech) PostgreSQL database
+
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd neuralhub
+npm install
+cp .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Edit `.env` — set at minimum:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+DIRECT_DATABASE_URL="postgresql://user:password@ep-xxx.region.aws.neon.tech/neuralhub?sslmode=require"
+AUTH_SECRET="your-32-char-minimum-secret-here"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+> Use the Neon host **without** `-pooler` for `DIRECT_DATABASE_URL`.
 
-## Learn More
+```bash
+npm run db:check      # Verify database connection
+npm run db:migrate    # Run migrations
+npm run db:seed       # Seed categories
+npm run dev           # http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Development server |
+| `npm run build` | Prisma generate + production build |
+| `npm run start` | Production server |
+| `npm run lint` | ESLint |
+| `npm run db:check` | Test database connectivity |
+| `npm run db:migrate` | Run migrations (dev) |
+| `npm run db:migrate:deploy` | Deploy migrations (production) |
+| `npm run db:seed` | Seed categories and membership tiers |
+| `npm run db:backfill-search` | Backfill article search text |
+| `npm run db:backfill-embeddings` | Backfill vector embeddings (requires OpenAI) |
+| `npm run db:studio` | Open Prisma Studio |
+| `npm run db:reset` | Reset database |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Prisma Client is generated automatically via `postinstall`.
 
-## Deploy on Vercel
+## Project structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/
+│   ├── (public)/       # Public website
+│   ├── (auth)/         # Login, register, verify
+│   ├── (dashboard)/    # Author dashboard
+│   ├── (admin)/        # Editorial admin panel
+│   └── api/            # API routes + cron
+├── components/         # UI by feature
+├── config/             # Site config, features, ads
+├── lib/
+│   ├── services/       # Business logic
+│   ├── actions/        # Server actions
+│   ├── auth/           # Auth.js, policies, audit
+│   ├── editor/         # TipTap extensions + nodes
+│   └── utils/          # Shared utilities
+├── styles/             # Prose typography
+└── types/              # TypeScript declarations
+prisma/
+├── schema.prisma
+├── seed.ts
+└── migrations/
+docs/
+├── ARCHITECTURE.md
+└── DEPLOYMENT.md
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Environment variables
+
+See `.env.example` for the full list. Key groups:
+
+- **Database:** `DIRECT_DATABASE_URL`
+- **Auth:** `AUTH_SECRET`, `AUTH_URL`, OAuth client IDs
+- **Email:** `RESEND_API_KEY`, `EMAIL_FROM`
+- **Search:** `SEARCH_PROVIDER=postgres-fts|vector|hybrid`
+- **AI:** `AI_ENABLED`, `AI_PROVIDER`, `OPENAI_API_KEY`
+- **Ads:** `NEXT_PUBLIC_ADS_ENABLED`, `NEXT_PUBLIC_ADSENSE_ID`
+- **Cron:** `CRON_SECRET`
+
+## Deployment
+
+See **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** for the full step-by-step production guide (Vercel + Neon + Supabase + Resend, free tier).
+
+Quick checklist:
+
+1. Push to GitHub → import in Vercel
+2. Set environment variables (see `.env.example`)
+3. Deploy → run `npm run deploy:migrate` + `npm run db:seed`
+4. Verify `GET /api/health`
+5. Promote your user to `EDITOR` in the database
+
+```bash
+npm run deploy:preflight   # Validate production env locally
+npm run deploy:migrate     # Apply migrations to production DB
+```
+
+Cron for scheduled publishing is configured in `vercel.json` (every 15 minutes).
+
+## Architecture
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for system design, service layer, and data model.
+
+## Admin access
+
+```sql
+UPDATE "User" SET role = 'EDITOR' WHERE email = 'you@example.com';
+```
+
+- **EDITOR** — `/admin` (articles, comments, newsletter)
+- **ADMIN** — users, settings, security logs
+
+## License
+
+Private — All rights reserved.
