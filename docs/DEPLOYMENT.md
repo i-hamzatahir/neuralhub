@@ -252,16 +252,28 @@ Then visit `https://YOUR_DOMAIN/admin`.
 
 ## Step 10 — Cron (scheduled publishing)
 
-`vercel.json` configures a cron job every 15 minutes:
+`vercel.json` configures a **daily** cron job (required for Vercel **Hobby / free** tier):
 
 ```
+0 12 * * *   → once per day at 12:00 UTC
 GET /api/cron/publish-scheduled
 Authorization: Bearer <CRON_SECRET>
 ```
 
 - Ensure `CRON_SECRET` is set in Vercel production env.
-- Vercel Hobby (free) supports cron jobs (limited count).
-- After deploy, check **Vercel → Project → Cron Jobs** tab.
+- Hobby accounts are limited to **one cron run per day**. Schedules like `*/15 * * * *` require Vercel Pro.
+
+### Free tier: more frequent publishes (optional)
+
+Use a free external cron (e.g. [cron-job.org](https://cron-job.org)) to call your endpoint every 15 minutes:
+
+```
+URL:     https://YOUR_DOMAIN/api/cron/publish-scheduled
+Method:  GET
+Header:  Authorization: Bearer YOUR_CRON_SECRET
+```
+
+Then remove or keep the daily Vercel cron as a backup.
 
 Test manually:
 
@@ -316,7 +328,7 @@ For richer stack traces, add [Sentry](https://sentry.io) later — not required 
 | Vercel | 100 GB bandwidth/month | Plenty for a content site |
 | Supabase | 1 GB storage | Compress images before upload |
 | Resend | 3,000 emails/month | Enough for early users |
-| Vercel cron | 2 jobs on Hobby | We use 1 |
+| Vercel cron | 1 run/day on Hobby | Daily at 12:00 UTC; use cron-job.org for 15-min |
 
 ---
 
