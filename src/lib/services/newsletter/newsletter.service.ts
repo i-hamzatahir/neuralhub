@@ -12,8 +12,7 @@ import {
 } from "@/lib/email/client";
 import type { SubscribeNewsletterInput } from "@/lib/validations/newsletter";
 import { trackEvent } from "@/lib/services/analytics/analytics.service";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+import { getProductionAppUrl } from "@/lib/url";
 
 async function syncUserNewsletterOptIn(email: string, optIn: boolean) {
   const user = await prisma.user.findUnique({
@@ -74,7 +73,7 @@ export async function subscribeToNewsletter(
   });
 
   const confirmToken = await createNewsletterConfirmToken(email);
-  const confirmUrl = `${APP_URL}/newsletter/confirm?token=${confirmToken}`;
+  const confirmUrl = `${getProductionAppUrl()}/newsletter/confirm?token=${confirmToken}`;
   const emailContent = buildNewsletterConfirmEmail(name ?? email, confirmUrl);
 
   await sendEmail({
@@ -126,7 +125,7 @@ export async function confirmNewsletterSubscription(token: string) {
   await syncUserNewsletterOptIn(result.email, true);
 
   const unsubscribeToken = await createNewsletterUnsubscribeToken(result.email);
-  const unsubscribeUrl = `${APP_URL}/newsletter/unsubscribe?token=${unsubscribeToken}`;
+  const unsubscribeUrl = `${getProductionAppUrl()}/newsletter/unsubscribe?token=${unsubscribeToken}`;
   const welcome = buildNewsletterWelcomeEmail(
     subscriber.name ?? result.email,
     unsubscribeUrl,

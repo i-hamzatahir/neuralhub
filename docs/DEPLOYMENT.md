@@ -130,8 +130,8 @@ Add these for **Production** (and Preview if you want preview deploys to work):
 |----------|-------|
 | `DIRECT_DATABASE_URL` | Neon direct connection string (Step 1) |
 | `AUTH_SECRET` | Output from `openssl rand -base64 32` |
-| `AUTH_URL` | `https://YOUR_PROJECT.vercel.app` (or custom domain) |
-| `NEXT_PUBLIC_APP_URL` | Same as `AUTH_URL` |
+| `AUTH_URL` | `https://YOUR_PROJECT.vercel.app` (must match your live domain exactly) |
+| `NEXT_PUBLIC_APP_URL` | Same as `AUTH_URL` — required for verification emails and login redirects |
 | `CRON_SECRET` | Output from second `openssl rand -base64 32` |
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
@@ -346,6 +346,8 @@ For richer stack traces, add [Sentry](https://sentry.io) later — not required 
 | `database: disconnected` on /api/health | Wrong `DIRECT_DATABASE_URL`; use non-pooler Neon host |
 | Prisma migration errors | Run `npm run deploy:migrate` with direct URL |
 | OAuth redirect mismatch | `AUTH_URL` must exactly match production URL |
+| Verification email links go to localhost | Set `AUTH_URL` + `NEXT_PUBLIC_APP_URL` to live domain, redeploy, then resend verification |
+| Registration fails with URL misconfiguration | Same fix — never use `http://localhost:3000` in Vercel env vars |
 | Images don't upload | Supabase `media` bucket must exist and be public |
 | Emails not sending | Verify Resend domain + `EMAIL_FROM` |
 | Cron not running | Confirm `CRON_SECRET` + Vercel Cron tab |

@@ -1,8 +1,10 @@
+import { getAppUrl } from "@/lib/url";
+
 export const siteConfig = {
   name: "NeuralHub",
   description:
     "A premium knowledge platform for AI, Data Science, Machine Learning, Programming, and Research.",
-  url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  url: getAppUrl(),
   locale: "en_US",
   ogImage: "/opengraph-image",
   keywords: [

@@ -83,6 +83,32 @@ export function getProductionEnvIssues(): string[] {
     issues.push("Missing NEXT_PUBLIC_APP_URL");
   }
 
+  if (!process.env.AUTH_URL) {
+    issues.push("Missing AUTH_URL");
+  }
+
+  const appUrl =
+    process.env.AUTH_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+
+  if (
+    appUrl.includes("localhost") ||
+    appUrl.includes("127.0.0.1")
+  ) {
+    issues.push(
+      "AUTH_URL and NEXT_PUBLIC_APP_URL must use your live domain, not localhost",
+    );
+  }
+
+  if (!process.env.RESEND_API_KEY) {
+    issues.push("Missing RESEND_API_KEY — verification emails will not send");
+  }
+
+  if (!process.env.EMAIL_FROM) {
+    issues.push("Missing EMAIL_FROM for transactional email");
+  }
+
   if (!process.env.CRON_SECRET) {
     issues.push("Missing CRON_SECRET for scheduled jobs");
   }

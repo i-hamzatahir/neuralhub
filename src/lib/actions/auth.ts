@@ -21,13 +21,12 @@ import {
   buildVerificationEmail,
   sendEmail,
 } from "@/lib/email/client";
+import { getProductionAppUrl } from "@/lib/url";
 import {
   forgotPasswordSchema,
   registerSchema,
   resetPasswordSchema,
 } from "@/lib/validations/auth";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 async function getClientIp(): Promise<string> {
   return getClientIpFromHeaders(await headers());
@@ -102,7 +101,7 @@ export async function registerUser(
   });
 
   const token = await createVerificationToken(normalizedEmail);
-  const verifyUrl = `${APP_URL}/verify-email?token=${token}`;
+  const verifyUrl = `${getProductionAppUrl()}/verify-email?token=${token}`;
   const emailContent = buildVerificationEmail(name, verifyUrl);
 
   try {
@@ -165,7 +164,7 @@ export async function resendVerificationEmail(
   }
 
   const token = await createVerificationToken(user.email);
-  const verifyUrl = `${APP_URL}/verify-email?token=${token}`;
+  const verifyUrl = `${getProductionAppUrl()}/verify-email?token=${token}`;
   const emailContent = buildVerificationEmail(user.name ?? "there", verifyUrl);
 
   await sendEmail({ to: user.email, ...emailContent });
@@ -196,7 +195,7 @@ export async function forgotPasswordAction(
 
   if (user && user.passwordHash) {
     const token = await createPasswordResetToken(email);
-    const resetUrl = `${APP_URL}/reset-password?token=${token}`;
+    const resetUrl = `${getProductionAppUrl()}/reset-password?token=${token}`;
     const emailContent = buildPasswordResetEmail(user.name ?? "there", resetUrl);
 
     await sendEmail({ to: email, ...emailContent });

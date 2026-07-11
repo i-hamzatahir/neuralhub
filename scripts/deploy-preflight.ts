@@ -74,8 +74,22 @@ async function main() {
         "AUTH_URL and NEXT_PUBLIC_APP_URL should match your production domain",
       );
     }
+
+    if (
+      process.env.AUTH_URL.includes("localhost") ||
+      process.env.NEXT_PUBLIC_APP_URL.includes("localhost")
+    ) {
+      fail(
+        "Auth URLs",
+        "Use your live Vercel domain, not localhost, for real user verification",
+      );
+    }
   } else {
     fail("Auth URLs", "Set AUTH_URL and NEXT_PUBLIC_APP_URL to https://your-domain");
+  }
+
+  if (!process.env.RESEND_API_KEY) {
+    fail("RESEND_API_KEY", "Required to send verification emails in production");
   }
 
   console.log("Results:\n");
