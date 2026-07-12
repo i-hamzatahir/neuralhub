@@ -51,6 +51,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     {
+      url: resolveAbsoluteUrl("/start-here"),
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: resolveAbsoluteUrl("/for-developers"),
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: resolveAbsoluteUrl("/for-researchers"),
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: resolveAbsoluteUrl("/editorial"),
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
       url: resolveAbsoluteUrl("/contact"),
       lastModified: new Date(),
       changeFrequency: "monthly",
@@ -64,6 +88,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: resolveAbsoluteUrl("/terms"),
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: resolveAbsoluteUrl("/cookies"),
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: resolveAbsoluteUrl("/disclaimer"),
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: resolveAbsoluteUrl("/accessibility"),
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,

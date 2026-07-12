@@ -78,7 +78,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-8 border-t border-border py-10 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-8 border-t border-border py-10 sm:grid-cols-3 lg:grid-cols-5">
           <FooterColumn title="Browse" links={footerNav.platform} />
           <FooterColumn
             title="Categories"
@@ -88,6 +88,7 @@ export function Footer() {
             }))}
           />
           <FooterColumn title="Company" links={footerNav.company} />
+          <FooterColumn title="Audiences" links={footerNav.audiences} />
           <FooterColumn title="Legal" links={footerNav.legal} />
         </div>
 

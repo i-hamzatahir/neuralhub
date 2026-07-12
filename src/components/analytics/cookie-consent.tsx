@@ -28,6 +28,10 @@ export function CookieConsent() {
       <div className="mx-auto flex max-w-4xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">
           We use cookies for authentication and optional analytics. See our{" "}
+          <Link href="/cookies" className="text-primary hover:underline">
+            cookie policy
+          </Link>{" "}
+          and{" "}
           <Link href="/privacy" className="text-primary hover:underline">
             privacy policy
           </Link>

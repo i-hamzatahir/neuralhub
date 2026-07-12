@@ -19,6 +19,12 @@ export const siteConfig = {
     "tutorials",
   ],
   twitterHandle: process.env.NEXT_PUBLIC_TWITTER_HANDLE ?? undefined,
+  contactEmail:
+    process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@neuralhub.blog",
+  legal: {
+    lastUpdated: "July 13, 2026",
+    jurisdiction: "Pakistan",
+  },
   links: {
     github: "https://github.com",
     twitter: "https://twitter.com",

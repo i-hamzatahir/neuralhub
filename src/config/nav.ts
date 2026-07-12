@@ -1,4 +1,5 @@
 import { siteConfig } from "./site";
+import { audiencePages, legalPages } from "./static-pages";
 
 export const mainNav = [
   { title: "Articles", href: "/articles" },
@@ -42,13 +43,12 @@ export const footerNav = {
   ],
   company: [
     { title: "About", href: "/about" },
-    { title: "Community", href: "/community" },
+    { title: "Start Here", href: "/start-here" },
+    { title: "Editorial Standards", href: "/editorial" },
     { title: "Contact", href: "/contact" },
   ],
-  legal: [
-    { title: "Privacy", href: "/privacy" },
-    { title: "Terms", href: "/terms" },
-  ],
+  audiences: audiencePages.map(({ title, href }) => ({ title, href })),
+  legal: legalPages,
 } as const;
 
 export const brand = {
