@@ -1,16 +1,20 @@
 import { redirect } from "next/navigation";
 import { RegisterForm } from "@/components/auth/register-form";
+import { isPersonalSite, isPublicRegistrationEnabled } from "@/config/site-mode";
 import { getSiteSettingsMap } from "@/lib/services/admin/admin.service";
-import { isSiteSettingEnabled } from "@/lib/security/site-settings";
 
 export const metadata = {
   title: "Create account",
 };
 
 export default async function RegisterPage() {
+  if (isPersonalSite) {
+    redirect("/");
+  }
+
   const settings = await getSiteSettingsMap();
-  if (!isSiteSettingEnabled(settings, "site.registration_enabled")) {
-    redirect("/login?error=registration_disabled");
+  if (!isPublicRegistrationEnabled(settings)) {
+    redirect("/");
   }
 
   return <RegisterForm />;

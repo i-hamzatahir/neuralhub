@@ -6,44 +6,45 @@ import {
 import { siteConfig } from "@/config/site";
 
 export const metadata = buildStaticPageMetadata(
-  "About NeuralHub",
-  "Learn about our mission to advance knowledge in AI, data science, and technology.",
+  "About",
+  `Learn about ${siteConfig.name} — articles on AI, data science, programming, and technology.`,
   "/about",
 );
 
 export default function AboutPage() {
   return (
     <StaticPage
-      title="About NeuralHub"
-      description="A premium knowledge platform for researchers, engineers, and writers."
+      title={`About ${siteConfig.name}`}
+      description="A personal blog focused on AI, data science, and software engineering."
       path="/about"
     >
       <p>
-        {siteConfig.name} is a publication platform built for people working at
-        the frontier of artificial intelligence, data science, machine learning,
-        and software engineering.
+        {siteConfig.name} is a personal website and blog sharing practical
+        articles, tutorials, and notes on artificial intelligence, machine
+        learning, data science, programming, and technology.
       </p>
       <p>
-        We combine the writing experience of Medium, the developer focus of
-        Hashnode, and the performance standards of modern SaaS products — so
-        authors can publish with confidence and readers can learn without friction.
+        The goal is simple: publish useful, in-depth content that helps readers
+        learn, stay current, and apply new ideas in real projects.
       </p>
-      <h2>Our mission</h2>
+      <h2>What you&apos;ll find here</h2>
+      <ul>
+        <li>Technical tutorials and how-to guides</li>
+        <li>Explanations of AI and data science concepts</li>
+        <li>Programming tips, tools, and engineering notes</li>
+        <li>Curated insights on emerging technology</li>
+      </ul>
+      <h2>Stay updated</h2>
       <p>
-        Make high-quality technical knowledge accessible, discoverable, and
-        beautifully presented. We believe great ideas deserve great tooling.
+        Browse the <Link href="/articles">latest articles</Link>, explore by{" "}
+        <Link href="/articles">topic</Link>, or subscribe via the{" "}
+        <Link href="/newsletter">newsletter</Link> and{" "}
+        <a href="/feed.xml">RSS feed</a>.
       </p>
-      <h2>For authors</h2>
+      <h2>Contact</h2>
       <p>
-        Create an account, verify your email, and{" "}
-        <Link href="/write">become an author</Link> to start publishing. Your
-        dashboard includes drafts, analytics, and a distraction-free editor with
-        autosave.
-      </p>
-      <h2>For readers</h2>
-      <p>
-        Explore articles by topic, follow authors, and subscribe to our{" "}
-        <a href="/feed.xml">RSS feed</a> for the latest publications.
+        Questions or collaboration ideas? Visit the{" "}
+        <Link href="/contact">contact page</Link>.
       </p>
     </StaticPage>
   );

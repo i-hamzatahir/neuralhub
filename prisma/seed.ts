@@ -114,6 +114,14 @@ async function main() {
   }
 
   console.log(`Seeded ${membershipTiers.length} membership tiers.`);
+
+  await prisma.siteSettings.upsert({
+    where: { key: "site.registration_enabled" },
+    update: { value: false },
+    create: { key: "site.registration_enabled", value: false },
+  });
+
+  console.log("Disabled public registration (personal blog mode).");
 }
 
 main()

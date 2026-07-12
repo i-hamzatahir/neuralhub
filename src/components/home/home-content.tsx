@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+import { isPersonalSite } from "@/config/site-mode";
 import { ArticleListItem } from "@/components/articles/article-list-item";
 import { CompactArticleRow } from "@/components/articles/compact-article-row";
 import { CategorySectionBlock } from "@/components/home/category-section-block";
@@ -28,11 +29,15 @@ export function HomeContent({
     <div className="blog-container py-10 sm:py-12">
       <header className="max-w-3xl">
         <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          {siteConfig.name}: AI, Data Science & Technology Articles
+          {isPersonalSite
+            ? `${siteConfig.name} — Personal Tech Blog`
+            : `${siteConfig.name}: AI, Data Science & Technology Articles`}
         </h1>
         <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-          {siteConfig.description} Explore tutorials, research summaries, and
-          practical guides written by engineers and researchers.
+          {siteConfig.description}
+          {isPersonalSite
+            ? " Read free articles, tutorials, and guides — no account required."
+            : " Explore tutorials, research summaries, and practical guides written by engineers and researchers."}
         </p>
       </header>
 
@@ -164,24 +169,26 @@ export function HomeContent({
       )}
 
       <section className="mt-14 rounded-lg border border-border bg-muted/30 p-6 sm:p-8">
-        <h2 className="text-xl font-bold tracking-tight">Write for NeuralHub</h2>
+        <h2 className="text-xl font-bold tracking-tight">
+          {isPersonalSite ? "Stay in the loop" : "Write for NeuralHub"}
+        </h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Publish in-depth tutorials and technical articles. Reach readers
-          interested in AI, machine learning, data science, and software
-          engineering.
+          {isPersonalSite
+            ? "Get new articles on AI, data science, and software engineering in your inbox."
+            : "Publish in-depth tutorials and technical articles. Reach readers interested in AI, machine learning, data science, and software engineering."}
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <Link
-            href="/write"
+            href="/newsletter"
             className="inline-flex h-10 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
-            Start writing
+            Subscribe to newsletter
           </Link>
           <Link
-            href="/about"
+            href={isPersonalSite ? "/contact" : "/about"}
             className="inline-flex h-10 items-center rounded-md border border-border px-4 text-sm font-medium hover:bg-accent"
           >
-            About the platform
+            {isPersonalSite ? "Get in touch" : "About the platform"}
           </Link>
         </div>
       </section>

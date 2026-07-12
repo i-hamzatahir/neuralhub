@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { HeaderAuth } from "@/components/layout/header-auth";
 import { BrandLogo } from "@/components/layout/brand-logo";
+import { isPersonalSite } from "@/config/site-mode";
 import { UserMenu } from "@/components/auth/user-menu";
 import { NotificationBell } from "@/components/engagement/notification-bell";
 import { cn } from "@/lib/utils/cn";
@@ -155,7 +156,7 @@ export function Header() {
                   <NotificationBell />
                   <UserMenu user={session.user} />
                 </div>
-              ) : (
+              ) : isPersonalSite ? null : (
                 <div className="flex flex-col gap-2 px-1">
                   <Button variant="outline" asChild>
                     <Link href="/login" onClick={() => setMobileOpen(false)}>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
 import { loginAction } from "@/lib/actions/login";
+import { isPersonalSite } from "@/config/site-mode";
 import { Button } from "@/components/ui/button";
 import { Input, InputGroup } from "@/components/ui/input";
 import { OAuthButtons } from "@/components/auth/oauth-buttons";
@@ -35,8 +36,14 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md border-border/80 shadow-sm">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-        <CardDescription>Sign in to continue reading and writing.</CardDescription>
+        <CardTitle className="text-2xl font-bold">
+          {isPersonalSite ? "Admin sign in" : "Welcome back"}
+        </CardTitle>
+        <CardDescription>
+          {isPersonalSite
+            ? "Sign in to manage and publish articles."
+            : "Sign in to continue reading and writing."}
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <OAuthButtons callbackUrl={callbackUrl} />
@@ -97,12 +104,14 @@ export function LoginForm() {
           </Button>
         </form>
 
-        <p className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-primary hover:underline">
-            Sign up
-          </Link>
-        </p>
+        {!isPersonalSite && (
+          <p className="text-center text-sm text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="text-primary hover:underline">
+              Sign up
+            </Link>
+          </p>
+        )}
       </CardContent>
     </Card>
   );

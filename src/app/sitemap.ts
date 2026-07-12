@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { topicNav } from "@/config/nav";
+import { isPersonalSite } from "@/config/site-mode";
 import {
   getCategories,
   listAuthorsForSitemap,
@@ -67,12 +68,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "yearly",
       priority: 0.3,
     },
-    {
-      url: resolveAbsoluteUrl("/write"),
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
+    ...(isPersonalSite
+      ? []
+      : [
+          {
+            url: resolveAbsoluteUrl("/write"),
+            lastModified: new Date(),
+            changeFrequency: "monthly" as const,
+            priority: 0.6,
+          },
+        ]),
     {
       url: resolveAbsoluteUrl("/search"),
       lastModified: new Date(),

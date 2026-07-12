@@ -3,11 +3,24 @@ import { authConfig } from "@/lib/auth/auth.config";
 import { getRequiredRole, hasMinRole } from "@/lib/auth/policies";
 import { NextResponse } from "next/server";
 
+const personalSite = process.env.NEXT_PUBLIC_PERSONAL_SITE !== "false";
+
 const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const isLoggedIn = !!req.auth?.user;
+
+  if (personalSite && pathname === "/register") {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
+  if (personalSite && pathname === "/write") {
+    if (isLoggedIn && hasMinRole(req.auth!.user!, "AUTHOR")) {
+      return NextResponse.redirect(new URL("/dashboard/articles/new", req.url));
+    }
+    return NextResponse.redirect(new URL("/", req.url));
+  }
 
   if (
     isLoggedIn &&
@@ -42,6 +55,7 @@ export const config = {
   matcher: [
     "/dashboard/:path*",
     "/admin/:path*",
+    "/write",
     "/login",
     "/register",
     "/forgot-password",

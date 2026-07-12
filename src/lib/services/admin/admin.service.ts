@@ -276,7 +276,7 @@ export async function listAuditLogs({
 
 const DEFAULT_SETTINGS: Record<string, Prisma.InputJsonValue> = {
   "site.maintenance_mode": false,
-  "site.registration_enabled": true,
+  "site.registration_enabled": false,
   "site.announcement": "",
 };
 

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { isPersonalSite } from "@/config/site-mode";
 import { UserMenu } from "@/components/auth/user-menu";
 import { NotificationBell } from "@/components/engagement/notification-bell";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,10 @@ export function HeaderAuth() {
         <UserMenu user={session.user} />
       </div>
     );
+  }
+
+  if (isPersonalSite) {
+    return null;
   }
 
   return (

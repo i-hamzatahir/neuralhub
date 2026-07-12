@@ -4,6 +4,7 @@ import { brand, footerNav, topicNav } from "@/config/nav";
 import { siteConfig } from "@/config/site";
 import { NewsletterSubscribeForm } from "@/components/newsletter/newsletter-subscribe-form";
 import { AdSlot } from "@/components/ads/ad-slot";
+import { isPersonalSite } from "@/config/site-mode";
 import { BrandLogo } from "@/components/layout/brand-logo";
 
 function FooterColumn({
@@ -90,8 +91,13 @@ export function Footer() {
           <FooterColumn title="Legal" links={footerNav.legal} />
         </div>
 
-        <div className="border-t border-border py-6 text-center text-sm text-muted-foreground sm:text-left">
-          © {year} {brand.name}. {brand.tagline}.
+        <div className="border-t border-border py-6 text-center text-sm text-muted-foreground sm:flex sm:items-center sm:justify-between">
+          <p>© {year} {brand.name}. {brand.tagline}.</p>
+          {isPersonalSite && (
+            <Link href="/login" className="mt-2 inline-block hover:text-primary sm:mt-0">
+              Admin login
+            </Link>
+          )}
         </div>
       </div>
     </footer>

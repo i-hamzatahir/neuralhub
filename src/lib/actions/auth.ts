@@ -12,6 +12,7 @@ import {
   verifyEmailToken,
   verifyResetToken,
 } from "@/lib/auth/tokens";
+import { isPersonalSite } from "@/config/site-mode";
 import { prisma } from "@/lib/db/prisma";
 import { getSiteSettingsMap } from "@/lib/services/admin/admin.service";
 import { getClientIpFromHeaders } from "@/lib/security/client-ip";
@@ -46,6 +47,10 @@ export async function registerUser(
   const rateLimit = await rateLimitByIp(ip, "register", 3, 60 * 60 * 1000);
   if (!rateLimit.allowed) {
     return { success: false, error: "Too many attempts. Try again later." };
+  }
+
+  if (isPersonalSite) {
+    return { success: false, error: "Registration is not available on this site." };
   }
 
   const siteSettings = await getSiteSettingsMap();

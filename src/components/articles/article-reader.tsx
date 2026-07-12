@@ -9,6 +9,7 @@ import { ArticleComments } from "@/components/engagement/article-comments";
 import { AdSlot } from "@/components/ads/ad-slot";
 import { AffiliateDisclosure } from "@/components/articles/affiliate-disclosure";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { isPersonalSite } from "@/config/site-mode";
 import type { ArticleWithRelations } from "@/lib/services/articles/article.service";
 import type { CommentWithAuthor } from "@/lib/services/engagement/engagement.service";
 import type { TocHeading } from "@/lib/utils/tiptap-headings";
@@ -132,14 +133,16 @@ export function ArticleReader({
 
           <div className="mt-5 flex flex-wrap items-center gap-4">
             <ShareButtons title={article.title} url={shareUrl} />
-            <ArticleEngagementBar
-              articleId={article.id}
-              slug={article.slug}
-              initialLikes={engagement.likeCount}
-              initialLiked={engagement.liked}
-              initialBookmarked={engagement.bookmarked}
-              isLoggedIn={isLoggedIn}
-            />
+            {!isPersonalSite && (
+              <ArticleEngagementBar
+                articleId={article.id}
+                slug={article.slug}
+                initialLikes={engagement.likeCount}
+                initialLiked={engagement.liked}
+                initialBookmarked={engagement.bookmarked}
+                isLoggedIn={isLoggedIn}
+              />
+            )}
           </div>
         </header>
 
@@ -209,14 +212,16 @@ export function ArticleReader({
         )}
       </div>
 
-      <ArticleComments
-        articleId={article.id}
-        slug={article.slug}
-        comments={comments}
-        currentUserId={currentUserId}
-        articleAuthorId={article.author.id}
-        isLoggedIn={isLoggedIn}
-      />
+      {!isPersonalSite && (
+        <ArticleComments
+          articleId={article.id}
+          slug={article.slug}
+          comments={comments}
+          currentUserId={currentUserId}
+          articleAuthorId={article.author.id}
+          isLoggedIn={isLoggedIn}
+        />
+      )}
 
       {related.length > 0 && (
         <section
