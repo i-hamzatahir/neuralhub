@@ -6,6 +6,7 @@ import {
 import { getCurrentUser } from "@/lib/auth/session";
 import { ArticleForm } from "@/components/dashboard/article-form";
 import { isAiEnabled } from "@/lib/services/ai/ai.service";
+import { getAppUrl } from "@/lib/url";
 
 export const metadata = { title: "Edit article" };
 
@@ -31,6 +32,7 @@ export default async function EditArticlePage({ params }: PageProps) {
         categories={categories}
         article={article}
         aiEnabled={isAiEnabled()}
+        appUrl={getAppUrl()}
       />
     </div>
   );

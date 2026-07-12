@@ -7,12 +7,14 @@ import {
   Plus,
   Bookmark,
   Bell,
+  Calendar,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 const links = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/articles", label: "Articles", icon: FileText },
+  { href: "/dashboard/calendar", label: "Calendar", icon: Calendar },
   { href: "/dashboard/bookmarks", label: "Bookmarks", icon: Bookmark },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/dashboard/notifications", label: "Notifications", icon: Bell },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useTransition } from "react";
 import {
   AlertCircle,
   CheckCircle2,
@@ -46,7 +46,6 @@ function SeverityIcon({ severity }: { severity: SeoAnalysisResult["checks"][numb
 }
 
 export function SeoAssistant({ form, aiEnabled = false, onApply }: SeoAssistantProps) {
-  const [analysis, setAnalysis] = useState<SeoAnalysisResult | null>(null);
   const [aiPending, startAiTransition] = useTransition();
 
   const hasContent = useMemo(
@@ -54,17 +53,9 @@ export function SeoAssistant({ form, aiEnabled = false, onApply }: SeoAssistantP
     [form.title, form.content],
   );
 
-  useEffect(() => {
-    if (!hasContent) {
-      setAnalysis(null);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      setAnalysis(analyzeArticleSeo(form));
-    }, 400);
-
-    return () => clearTimeout(timer);
+  const analysis = useMemo(() => {
+    if (!hasContent) return null;
+    return analyzeArticleSeo(form);
   }, [form, hasContent]);
 
   function applyRecommendedFixes() {

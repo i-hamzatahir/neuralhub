@@ -682,3 +682,36 @@ export async function listAuthorsWithPublishedArticles({
     pages: Math.ceil(total / limit),
   };
 }
+
+export type CalendarArticle = {
+  id: string;
+  title: string;
+  slug: string;
+  status: ArticleStatus;
+  scheduledAt: Date | null;
+  publishedAt: Date | null;
+};
+
+export async function listAuthorCalendarArticles(
+  authorId: string,
+): Promise<CalendarArticle[]> {
+  return prisma.article.findMany({
+    where: {
+      authorId,
+      OR: [
+        { scheduledAt: { not: null } },
+        { publishedAt: { not: null } },
+        { status: { in: ["DRAFT", "REVIEW"] } },
+      ],
+    },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      status: true,
+      scheduledAt: true,
+      publishedAt: true,
+    },
+    orderBy: [{ scheduledAt: "asc" }, { publishedAt: "desc" }],
+  });
+}

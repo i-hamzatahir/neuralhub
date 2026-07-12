@@ -17,6 +17,11 @@ import {
   aiSuggestTitleAction,
 } from "@/lib/actions/ai";
 import { SeoAssistant } from "@/components/dashboard/seo-assistant";
+import { MarkdownImportDialog } from "@/components/dashboard/markdown-import-dialog";
+import { PublishChecklist } from "@/components/dashboard/publish-checklist";
+import { InternalLinkSuggestions } from "@/components/dashboard/internal-link-suggestions";
+import { SocialShareKitPanel } from "@/components/dashboard/social-share-kit";
+import { slugify } from "@/lib/utils/slug";
 import type { Category } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils/cn";
 
@@ -29,6 +34,7 @@ function formatDatetimeLocal(date: Date | null | undefined) {
 interface ArticleFormProps {
   categories: Category[];
   aiEnabled?: boolean;
+  appUrl: string;
   article?: {
     id: string;
     title: string;
@@ -50,7 +56,7 @@ interface ArticleFormProps {
   };
 }
 
-export function ArticleForm({ categories, aiEnabled = false, article }: ArticleFormProps) {
+export function ArticleForm({ categories, aiEnabled = false, appUrl, article }: ArticleFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [aiPending, startAiTransition] = useTransition();
@@ -257,11 +263,19 @@ export function ArticleForm({ categories, aiEnabled = false, article }: ArticleF
           </InputGroup>
 
           {!showPreview ? (
-          <ArticleEditor
-            content={form.content}
-            onChange={(c) => update("content", c)}
-            onImageUpload={uploadImage}
-          />
+          <div className="space-y-3">
+            <div className="flex justify-end">
+              <MarkdownImportDialog
+                hasExistingContent={Boolean(form.content.trim())}
+                onImport={(content) => update("content", content)}
+              />
+            </div>
+            <ArticleEditor
+              content={form.content}
+              onChange={(c) => update("content", c)}
+              onImageUpload={uploadImage}
+            />
+          </div>
           ) : (
             <div className="rounded-xl border border-border bg-card p-6">
               <ArticleContent content={form.content || '{"type":"doc","content":[]}'} />
@@ -398,6 +412,34 @@ export function ArticleForm({ categories, aiEnabled = false, article }: ArticleF
             />
             Contains affiliate links
           </label>
+
+          <PublishChecklist
+            form={{
+              title: form.title,
+              slug: form.slug || slugify(form.title),
+              excerpt: form.excerpt,
+              content: form.content,
+              coverImage: form.coverImage,
+              categoryId: form.categoryId,
+              tags: form.tags,
+              seoTitle: form.seoTitle,
+              seoDescription: form.seoDescription,
+            }}
+          />
+
+          <InternalLinkSuggestions
+            articleId={form.id || undefined}
+            title={form.title}
+            tags={form.tags}
+            content={form.content}
+          />
+
+          <SocialShareKitPanel
+            title={form.title}
+            excerpt={form.excerpt}
+            slug={form.slug || slugify(form.title)}
+            appUrl={appUrl}
+          />
 
           <SeoAssistant
             aiEnabled={aiEnabled}
