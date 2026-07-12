@@ -46,7 +46,7 @@ def remove_background(input_path: Path, output_path: Path) -> None:
     padded.save(output_path, "PNG", optimize=True)
 
 
-def make_favicon(source: Path, output_path: Path, size: int = 512) -> None:
+def make_square_icon(source: Path, output_path: Path, size: int) -> None:
     image = Image.open(source).convert("RGBA")
     image.thumbnail((size, size), Image.Resampling.LANCZOS)
     canvas = Image.new("RGBA", (size, size), (0, 0, 0, 0))
@@ -55,14 +55,35 @@ def make_favicon(source: Path, output_path: Path, size: int = 512) -> None:
     canvas.save(output_path, "PNG", optimize=True)
 
 
+def make_favicon_ico(source: Path, output_path: Path) -> None:
+    image = Image.open(source).convert("RGBA")
+    image.thumbnail((48, 48), Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
+    offset = ((48 - image.width) // 2, (48 - image.height) // 2)
+    canvas.paste(image, offset, image)
+    canvas.save(
+        output_path,
+        format="ICO",
+        sizes=[(16, 16), (32, 32), (48, 48)],
+    )
+
+
+def generate_brand_assets(source: Path, output_dir: Path) -> None:
+    transparent = output_dir / "logo-transparent-temp.png"
+    remove_background(source, transparent)
+
+    make_square_icon(transparent, output_dir / "logo.png", 512)
+    make_square_icon(transparent, output_dir / "apple-touch-icon.png", 180)
+    make_square_icon(transparent, output_dir / "favicon-32.png", 32)
+    make_favicon_ico(transparent, output_dir / "favicon.ico")
+    make_square_icon(transparent, output_dir / "icon.png", 32)
+
+    transparent.unlink(missing_ok=True)
+
+
 if __name__ == "__main__":
     src = Path(sys.argv[1])
-    logo_out = Path(sys.argv[2])
-    favicon_out = Path(sys.argv[3])
-
-    transparent = logo_out.with_name("logo-transparent-temp.png")
-    remove_background(src, transparent)
-    make_favicon(transparent, logo_out, 512)
-    make_favicon(transparent, favicon_out, 512)
-    transparent.unlink(missing_ok=True)
-    print(f"Saved {logo_out} and {favicon_out}")
+    output_dir = Path(sys.argv[2])
+    output_dir.mkdir(parents=True, exist_ok=True)
+    generate_brand_assets(src, output_dir)
+    print(f"Saved brand assets to {output_dir}")
