@@ -27,7 +27,7 @@ export function buildOrganizationJsonLd() {
     "@type": "Organization",
     name: siteConfig.name,
     url: siteConfig.url,
-    logo: resolveImageUrl(siteConfig.ogImage),
+    logo: resolveImageUrl(siteConfig.logo),
     sameAs: [siteConfig.links.twitter, siteConfig.links.github].filter(Boolean),
   };
 }
@@ -60,7 +60,7 @@ export function buildArticleJsonLd(article: ArticleWithRelations) {
       url: siteConfig.url,
       logo: {
         "@type": "ImageObject",
-        url: resolveImageUrl(siteConfig.ogImage),
+        url: resolveImageUrl(siteConfig.logo),
       },
     },
     mainEntityOfPage: {

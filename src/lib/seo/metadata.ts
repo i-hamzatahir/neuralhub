@@ -157,6 +157,10 @@ export function buildRootMetadata(): Metadata {
       address: false,
       telephone: false,
     },
+    icons: {
+      icon: "/logo.png",
+      apple: "/apple-touch-icon.png",
+    },
     openGraph: {
       type: "website",
       locale: siteConfig.locale,

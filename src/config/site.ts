@@ -7,6 +7,7 @@ export const siteConfig = {
   url: getAppUrl(),
   locale: "en_US",
   ogImage: "/opengraph-image",
+  logo: "/logo.png",
   keywords: [
     "AI",
     "artificial intelligence",
