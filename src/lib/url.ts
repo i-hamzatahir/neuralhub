@@ -1,6 +1,4 @@
-function normalizeUrl(url: string): string {
-  return url.replace(/\/$/, "");
-}
+import { ensureAuthUrl } from "@/lib/auth/resolve-auth-url";
 
 function isLocalUrl(url: string): boolean {
   try {
@@ -17,16 +15,7 @@ function isLocalUrl(url: string): boolean {
  * NEXT_PUBLIC_APP_URL was missing at build time.
  */
 export function getAppUrl(): string {
-  const fromAuth = process.env.AUTH_URL?.trim();
-  if (fromAuth) return normalizeUrl(fromAuth);
-
-  const fromPublic = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (fromPublic) return normalizeUrl(fromPublic);
-
-  const vercel = process.env.VERCEL_URL?.trim();
-  if (vercel) return `https://${normalizeUrl(vercel)}`;
-
-  return "http://localhost:3000";
+  return ensureAuthUrl();
 }
 
 /**

@@ -1,6 +1,7 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import { hasOAuthProviders } from "@/lib/auth/auth.config";
 import { Button } from "@/components/ui/button";
 import { sanitizeCallbackUrl } from "@/lib/security/redirect";
 
@@ -9,6 +10,8 @@ interface OAuthButtonsProps {
 }
 
 export function OAuthButtons({ callbackUrl = "/" }: OAuthButtonsProps) {
+  if (!hasOAuthProviders) return null;
+
   const safeCallbackUrl = sanitizeCallbackUrl(callbackUrl);
 
   return (

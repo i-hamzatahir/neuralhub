@@ -1,5 +1,7 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
+    const { ensureAuthUrl } = await import("./lib/auth/resolve-auth-url");
+    ensureAuthUrl();
     await import("./lib/monitoring/server-errors");
   }
 }

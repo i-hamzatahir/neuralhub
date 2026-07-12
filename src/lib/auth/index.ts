@@ -1,12 +1,16 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { isPersonalSite } from "@/config/site-mode";
 import { authConfig } from "@/lib/auth/auth.config";
 import { createAuditLog } from "@/lib/auth/audit";
 import { verifyPassword } from "@/lib/auth/password";
 import { generateUniqueUsername } from "@/lib/auth/tokens";
 import { prisma } from "@/lib/db/prisma";
 import { loginSchema } from "@/lib/validations/auth";
+import { ensureAuthUrl } from "@/lib/auth/resolve-auth-url";
+
+ensureAuthUrl();
 
 declare module "next-auth" {
   interface JWT {
@@ -55,7 +59,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         if (!user.emailVerified) {
-          return null;
+          const canBypassVerification =
+            isPersonalSite &&
+            ["AUTHOR", "EDITOR", "ADMIN"].includes(user.role);
+          if (!canBypassVerification) {
+            return null;
+          }
         }
 
         await createAuditLog({

@@ -2,6 +2,7 @@
 
 import { AuthError } from "next-auth";
 import { headers } from "next/headers";
+import { isPersonalSite } from "@/config/site-mode";
 import { signIn, signOut } from "@/lib/auth";
 import { rateLimitByIp } from "@/lib/auth/rate-limit";
 import { prisma } from "@/lib/db/prisma";
@@ -41,22 +42,33 @@ export async function loginAction(
   });
 
   if (user && !user.emailVerified) {
-    return {
-      success: false,
-      error: "Please verify your email before logging in.",
-    };
+    const canBypassVerification =
+      isPersonalSite && ["AUTHOR", "EDITOR", "ADMIN"].includes(user.role);
+    if (!canBypassVerification) {
+      return {
+        success: false,
+        error: "Please verify your email before logging in.",
+      };
+    }
   }
 
   const callbackUrl = sanitizeCallbackUrl(
     formData.get("callbackUrl") as string,
+    isPersonalSite ? "/dashboard" : "/",
   );
 
   try {
-    await signIn("credentials", {
+    const result = await signIn("credentials", {
       email: normalizedEmail,
       password,
-      redirectTo: callbackUrl,
+      redirect: false,
     });
+
+    if (result?.error) {
+      return { success: false, error: "Invalid email or password." };
+    }
+
+    return { success: true, redirectTo: callbackUrl };
   } catch (error) {
     if (error instanceof AuthError) {
       if (error.type === "CredentialsSignin") {
@@ -65,8 +77,6 @@ export async function loginAction(
     }
     throw error;
   }
-
-  return { success: true };
 }
 
 export async function logoutAction() {

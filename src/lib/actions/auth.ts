@@ -37,6 +37,7 @@ export type ActionResult = {
   success: boolean;
   error?: string;
   message?: string;
+  redirectTo?: string;
 };
 
 export async function registerUser(

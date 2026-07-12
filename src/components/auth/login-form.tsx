@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { loginAction } from "@/lib/actions/login";
 import { isPersonalSite } from "@/config/site-mode";
 import { Button } from "@/components/ui/button";
 import { Input, InputGroup } from "@/components/ui/input";
 import { OAuthButtons } from "@/components/auth/oauth-buttons";
+import { hasOAuthProviders } from "@/lib/auth/auth.config";
 import { sanitizeCallbackUrl } from "@/lib/security/redirect";
 import {
   Card,
@@ -19,12 +20,22 @@ import {
 
 export function LoginForm() {
   const searchParams = useSearchParams();
-  const callbackUrl = sanitizeCallbackUrl(searchParams.get("callbackUrl"));
+  const defaultCallback = isPersonalSite ? "/dashboard" : "/";
+  const callbackUrl = sanitizeCallbackUrl(
+    searchParams.get("callbackUrl"),
+    defaultCallback,
+  );
   const error = searchParams.get("error");
 
   const [state, formAction, pending] = useActionState(loginAction, {
     success: false,
   });
+
+  useEffect(() => {
+    if (state.success && state.redirectTo) {
+      window.location.assign(state.redirectTo);
+    }
+  }, [state.success, state.redirectTo]);
 
   const errorMessage =
     state.error ??
@@ -48,16 +59,18 @@ export function LoginForm() {
       <CardContent className="space-y-6">
         <OAuthButtons callbackUrl={callbackUrl} />
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border" />
+        {hasOAuthProviders && (
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">
+                Or continue with email
+              </span>
+            </div>
           </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">
-              Or continue with email
-            </span>
-          </div>
-        </div>
+        )}
 
         <form action={formAction} className="space-y-4">
           <input type="hidden" name="callbackUrl" value={callbackUrl} />
