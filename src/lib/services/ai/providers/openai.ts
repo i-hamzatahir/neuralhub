@@ -76,4 +76,20 @@ export const openAiProvider: AiProvider = {
       .filter(Boolean)
       .slice(0, 5);
   },
+
+  async suggestSeoTitle(title, content) {
+    return chatCompletion(
+      "Write one SEO title for a technical blog article. Max 60 characters. Include the main keyword early. Return only the title text.",
+      `Article title: ${title}\n\nContent:\n${content}`,
+      40,
+    );
+  },
+
+  async suggestSeoDescription(title, content) {
+    return chatCompletion(
+      "Write one SEO meta description for a technical blog article. 140-160 characters. Compelling, specific, no quotes. Return only the description.",
+      `Article title: ${title}\n\nContent:\n${content}`,
+      80,
+    );
+  },
 };

@@ -13,4 +13,10 @@ export const noneAiProvider: AiProvider = {
   async suggestTags() {
     return [];
   },
+  async suggestSeoTitle() {
+    return "";
+  },
+  async suggestSeoDescription() {
+    return "";
+  },
 };

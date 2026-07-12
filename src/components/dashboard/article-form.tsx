@@ -16,6 +16,7 @@ import {
   aiSuggestExcerptAction,
   aiSuggestTitleAction,
 } from "@/lib/actions/ai";
+import { SeoAssistant } from "@/components/dashboard/seo-assistant";
 import type { Category } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils/cn";
 
@@ -128,6 +129,10 @@ export function ArticleForm({ categories, aiEnabled = false, article }: ArticleF
 
   function update(field: keyof typeof form, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  function applySeoUpdates(updates: Partial<typeof form>) {
+    setForm((f) => ({ ...f, ...updates }));
   }
 
   function handleAiSuggestTitle() {
@@ -394,6 +399,22 @@ export function ArticleForm({ categories, aiEnabled = false, article }: ArticleF
             Contains affiliate links
           </label>
 
+          <SeoAssistant
+            aiEnabled={aiEnabled}
+            form={{
+              title: form.title,
+              slug: form.slug,
+              excerpt: form.excerpt,
+              content: form.content,
+              coverImage: form.coverImage,
+              categoryId: form.categoryId,
+              tags: form.tags,
+              seoTitle: form.seoTitle,
+              seoDescription: form.seoDescription,
+            }}
+            onApply={applySeoUpdates}
+          />
+
           <Button
             type="button"
             variant="ghost"
@@ -405,7 +426,23 @@ export function ArticleForm({ categories, aiEnabled = false, article }: ArticleF
 
           {showSeo && (
             <div className="space-y-3 rounded-lg border border-border p-4">
-              <InputGroup label="SEO title" htmlFor="seoTitle">
+              <InputGroup
+                label="URL slug"
+                htmlFor="slug"
+                description={`neuralhub.blog/articles/${form.slug || "your-slug"}`}
+              >
+                <Input
+                  id="slug"
+                  value={form.slug}
+                  onChange={(e) => update("slug", e.target.value)}
+                  placeholder="auto-generated-from-title"
+                />
+              </InputGroup>
+              <InputGroup
+                label="SEO title"
+                htmlFor="seoTitle"
+                description={`${(form.seoTitle || form.title).length}/60 characters`}
+              >
                 <Input
                   id="seoTitle"
                   value={form.seoTitle}
@@ -413,7 +450,11 @@ export function ArticleForm({ categories, aiEnabled = false, article }: ArticleF
                   placeholder="Custom title for search engines"
                 />
               </InputGroup>
-              <InputGroup label="SEO description" htmlFor="seoDescription">
+              <InputGroup
+                label="SEO description"
+                htmlFor="seoDescription"
+                description={`${(form.seoDescription || form.excerpt).length}/160 characters`}
+              >
                 <Textarea
                   id="seoDescription"
                   value={form.seoDescription}
