@@ -80,12 +80,28 @@ function codeBlock(code: string, language?: string): TipTapNode {
   };
 }
 
+function mermaidBlock(source: string): TipTapNode {
+  return {
+    type: "mermaidBlock",
+    attrs: { source },
+  };
+}
+
 function blockquote(lines: string[]): TipTapNode {
   return {
     type: "blockquote",
     content: lines.map((line) => paragraph(parseInline(line))),
   };
 }
+
+function imageBlock(src: string, alt: string): TipTapNode {
+  return {
+    type: "image",
+    attrs: { src: src.trim(), alt: alt.trim() },
+  };
+}
+
+const imageLinePattern = /^!\[([^\]]*)\]\(([^)]+)\)$/;
 
 export function markdownToTipTap(markdown: string): string {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
@@ -101,6 +117,13 @@ export function markdownToTipTap(markdown: string): string {
       continue;
     }
 
+    const imageMatch = trimmed.match(imageLinePattern);
+    if (imageMatch) {
+      content.push(imageBlock(imageMatch[2], imageMatch[1]));
+      i += 1;
+      continue;
+    }
+
     const codeFence = trimmed.match(/^```(\w+)?$/);
     if (codeFence) {
       const language = codeFence[1];
@@ -110,7 +133,12 @@ export function markdownToTipTap(markdown: string): string {
         codeLines.push(lines[i]);
         i += 1;
       }
-      content.push(codeBlock(codeLines.join("\n"), language));
+      const code = codeLines.join("\n");
+      if (language === "mermaid") {
+        content.push(mermaidBlock(code));
+      } else {
+        content.push(codeBlock(code, language));
+      }
       i += 1;
       continue;
     }
@@ -166,6 +194,7 @@ export function markdownToTipTap(markdown: string): string {
       !lines[i].trim().startsWith("#") &&
       !lines[i].trim().startsWith(">") &&
       !lines[i].trim().startsWith("```") &&
+      !imageLinePattern.test(lines[i].trim()) &&
       !/^[-*+]\s+/.test(lines[i].trim()) &&
       !/^\d+\.\s+/.test(lines[i].trim()) &&
       !/^(-{3,}|\*{3,}|_{3,})$/.test(lines[i].trim())

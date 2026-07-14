@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
-import { isPersonalSite } from "@/config/site-mode";
-import { ArticleListItem } from "@/components/articles/article-list-item";
-import { CompactArticleRow } from "@/components/articles/compact-article-row";
-import { CategorySectionBlock } from "@/components/home/category-section-block";
+import { ArrowRight } from "lucide-react";
+import { ArticleCard } from "@/components/articles/article-card";
+import { HomeHero } from "@/components/home/home-hero";
+import { HomeSidebar } from "@/components/home/home-sidebar";
+import { HomeTopicGrid } from "@/components/home/home-topic-grid";
 import type {
   ArticleWithRelations,
   CategorySectionPreview,
@@ -25,173 +25,86 @@ export function HomeContent({
   categorySections,
   categories,
 }: HomeContentProps) {
-  return (
-    <div className="blog-container py-10 sm:py-12">
-      <header className="max-w-3xl">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          {isPersonalSite
-            ? `${siteConfig.name} — Personal Tech Blog`
-            : `${siteConfig.name}: AI, Data Science & Technology Articles`}
-        </h1>
-        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-          {siteConfig.description}
-          {isPersonalSite
-            ? " Read free articles, tutorials, and guides — no account required."
-            : " Explore tutorials, research summaries, and practical guides written by engineers and researchers."}
-        </p>
-      </header>
+  const heroArticle = featuredArticle ?? latestArticles[0] ?? null;
+  const gridArticles = latestArticles.filter(
+    (article) => article.id !== heroArticle?.id,
+  );
 
-      <section className="mt-10" aria-labelledby="categories-heading">
-        <h2 id="categories-heading" className="text-sm font-semibold text-foreground">
-          Browse by technology area
-        </h2>
+  return (
+    <div className="blog-container py-8 sm:py-10">
+      <HomeHero article={heroArticle} />
+
+      {categories.length > 0 && (
         <nav
-          className="mt-3 flex flex-wrap gap-2"
+          className="mt-8 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           aria-label="Article categories"
         >
           {categories.map((category) => (
             <Link
               key={category.slug}
               href={`/${category.slug}`}
-              className="rounded-full border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
+              className="shrink-0 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
             >
               {category.name}
             </Link>
           ))}
         </nav>
-      </section>
-
-      {featuredArticle && (
-        <section className="mt-12" aria-labelledby="featured-heading">
-          <h2
-            id="featured-heading"
-            className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
-          >
-            Featured article
-          </h2>
-          <ArticleListItem article={featuredArticle} featured />
-        </section>
       )}
 
-      <section
-        className="mt-12 grid gap-8 lg:grid-cols-2"
-        aria-label="Site-wide article highlights"
-      >
-        {latestArticles.length > 0 && (
-          <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
-            <div className="mb-4 flex items-center justify-between gap-4">
-              <h2 className="text-lg font-bold tracking-tight">
-                Latest across NeuralHub
-              </h2>
-              <Link
-                href="/articles"
-                className="text-sm font-medium text-primary hover:underline"
-              >
-                View all
-              </Link>
-            </div>
-            <div>
-              {latestArticles.slice(0, 5).map((article) => (
-                <CompactArticleRow key={article.id} article={article} />
-              ))}
-            </div>
-          </div>
-        )}
+      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
+        <div>
+          {gridArticles.length > 0 ? (
+            <section aria-labelledby="latest-heading">
+              <div className="mb-6 flex items-end justify-between gap-4">
+                <div>
+                  <h2
+                    id="latest-heading"
+                    className="text-2xl font-bold tracking-tight"
+                  >
+                    Latest articles
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Tutorials, explainers, and practical guides.
+                  </p>
+                </div>
+                <Link
+                  href="/articles"
+                  className="hidden items-center gap-1 text-sm font-medium text-primary hover:underline sm:inline-flex"
+                >
+                  View all
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
 
-        {popularArticles.length > 0 && (
-          <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
-            <div className="mb-4 flex items-center justify-between gap-4">
-              <h2 className="text-lg font-bold tracking-tight">
-                Most viewed articles
-              </h2>
-              <Link
-                href="/articles"
-                className="text-sm font-medium text-primary hover:underline"
-              >
-                Explore more
-              </Link>
-            </div>
-            <div>
-              {popularArticles.slice(0, 5).map((article, index) => (
-                <CompactArticleRow
-                  key={article.id}
-                  article={article}
-                  rank={index + 1}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-      </section>
+              <div className="grid gap-6 sm:grid-cols-2">
+                {gridArticles.map((article) => (
+                  <ArticleCard key={article.id} article={article} />
+                ))}
+              </div>
 
-      {categorySections.length > 0 && (
-        <section className="mt-14" aria-labelledby="sections-heading">
-          <div className="mb-6 max-w-3xl">
-            <h2 id="sections-heading" className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Explore by section
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Latest and most-read articles from AI, machine learning, data
-              science, programming, cloud, developer tools, and emerging
-              technology topics.
-            </p>
-          </div>
-          <div className="space-y-6">
-            {categorySections.map((section) => (
-              <CategorySectionBlock key={section.category.slug} section={section} />
-            ))}
-          </div>
-        </section>
-      )}
+              <div className="mt-6 sm:hidden">
+                <Link
+                  href="/articles"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                >
+                  View all articles
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </section>
+          ) : (
+            !heroArticle && (
+              <p className="rounded-xl border border-dashed border-border py-16 text-center text-muted-foreground">
+                No articles published yet. Check back soon.
+              </p>
+            )
+          )}
 
-      {latestArticles.length > 5 && (
-        <section className="mt-14" aria-labelledby="more-latest-heading">
-          <div className="mb-4 flex items-center justify-between gap-4">
-            <h2
-              id="more-latest-heading"
-              className="text-sm font-semibold uppercase tracking-wide text-muted-foreground"
-            >
-              More recent articles
-            </h2>
-            <Link
-              href="/articles"
-              className="text-sm font-medium text-primary hover:underline"
-            >
-              Full archive
-            </Link>
-          </div>
-          <div>
-            {latestArticles.slice(5).map((article) => (
-              <ArticleListItem key={article.id} article={article} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section className="mt-14 rounded-lg border border-border bg-muted/30 p-6 sm:p-8">
-        <h2 className="text-xl font-bold tracking-tight">
-          {isPersonalSite ? "Stay in the loop" : "Write for NeuralHub"}
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          {isPersonalSite
-            ? "Get new articles on AI, data science, and software engineering in your inbox."
-            : "Publish in-depth tutorials and technical articles. Reach readers interested in AI, machine learning, data science, and software engineering."}
-        </p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Link
-            href="/newsletter"
-            className="inline-flex h-10 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            Subscribe to newsletter
-          </Link>
-          <Link
-            href={isPersonalSite ? "/contact" : "/about"}
-            className="inline-flex h-10 items-center rounded-md border border-border px-4 text-sm font-medium hover:bg-accent"
-          >
-            {isPersonalSite ? "Get in touch" : "About the platform"}
-          </Link>
+          <HomeTopicGrid sections={categorySections} />
         </div>
-      </section>
+
+        <HomeSidebar popularArticles={popularArticles} />
+      </div>
     </div>
   );
 }

@@ -23,10 +23,10 @@ export default async function HomePage() {
   const [featured, latest, popular, categories, categorySections] =
     await Promise.all([
       listPublishedArticles({ featured: true, limit: 1 }),
-      listPublishedArticles({ limit: 8 }),
+      listPublishedArticles({ limit: 6 }),
       listTrendingArticles(5),
       getCategories(),
-      listCategorySectionPreviews(4),
+      listCategorySectionPreviews(1),
     ]);
 
   return (
